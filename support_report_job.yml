@@ -1,0 +1,9 @@
+apps:
+  - name: Support Report Download (JOB)
+    script: artisan
+    exec_mode: fork
+    interpreter: php
+    instances: 1
+    args:
+      - queue:work
+      - --queue=support_download_job

@@ -1,0 +1,8 @@
+apps:
+  - name: Payout Alert V1 (Support Command)
+    script: artisan
+    exec_mode: fork
+    interpreter: php
+    instances: 1
+    args:
+      - PayoutAlert

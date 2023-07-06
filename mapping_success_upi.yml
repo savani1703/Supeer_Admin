@@ -1,0 +1,9 @@
+apps:
+  - name: Mapping Success Upi (Support Command)
+    script: artisan
+    exec_mode: fork
+    interpreter: php
+    instances: 1
+    args:
+      - mappingSuccessUpi
+

@@ -1,0 +1,8 @@
+apps:
+  - name: Txn Vpn Alert (Support Command)
+    script: artisan
+    exec_mode: fork
+    interpreter: php
+    instances: 1
+    args:
+      - TxnVpnAlert

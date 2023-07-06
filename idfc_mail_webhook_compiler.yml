@@ -1,0 +1,9 @@
+apps:
+  - name: IDFC Payout Mail Webhook Compiler (Support Command)
+    script: artisan
+    exec_mode: fork
+    interpreter: php
+    instances: 1
+    args:
+      - IDFCMailWebhookCompiler
+

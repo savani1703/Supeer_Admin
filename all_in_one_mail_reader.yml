@@ -1,0 +1,8 @@
+apps:
+  - name: All In One Mail Reader (IDFC Only ) (Support Command)
+    script: artisan
+    exec_mode: fork
+    interpreter: php
+    instances: 1
+    args:
+      - AllInOneMailReader

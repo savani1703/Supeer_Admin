@@ -1,0 +1,8 @@
+apps:
+  - name: Bank Sync Manager (Support Command)
+    script: artisan
+    exec_mode: fork
+    interpreter: php
+    instances: 1
+    args:
+      - BankSyncManager

@@ -1,0 +1,89 @@
+<?php
+
+
+namespace App\Models\Management;
+
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Log;
+
+class WebhookRequest extends Model
+{
+    protected $connection = 'merchant_management';
+    protected $table = 'tbl_webhook_request';
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    public $timestamps = false;
+
+    protected $casts = [
+        'is_get' => 'boolean'
+    ];
+
+    protected $appends = [
+        "created_at_ist",
+        "updated_at_ist",
+    ];
+
+    public function getCreatedAtIstAttribute() {
+        $createdAtOriginal = $this->created_at;
+        if(isset($createdAtOriginal)) {
+            return Carbon::parse($createdAtOriginal, "UTC")->setTimezone("Asia/Kolkata")->format("d-m-Y H:i:s");
+        }
+        return $createdAtOriginal;
+    }
+
+    public function getUpdatedAtIstAttribute() {
+        $updatedAtOriginal = $this->updated_at;
+        if(isset($updatedAtOriginal)) {
+            return Carbon::parse($updatedAtOriginal, "UTC")->setTimezone("Asia/Kolkata")->format("d-m-Y H:i:s");
+        }
+        return $updatedAtOriginal;
+    }
+
+    public function getPgWebhooks($filterData, $limit, $pageNo)
+    {
+        try {
+            $pgWebhooks = $this->newQuery();
+
+            if(isset($filterData)) {
+
+                if(isset($filterData['transaction_id'])) {
+                    $pgWebhooks->where('transaction_id', $filterData['transaction_id']);
+                }
+
+                if(isset($filterData['pg_id'])) {
+                    $pgWebhooks->where('pg_id', $filterData['pg_id']);
+                }
+
+                if(isset($filterData['is_get'])) {
+                    $pgWebhooks->where('is_get', $filterData['is_get']);
+                }
+
+                if(isset($filterData['start_date']) && !empty($filterData['start_date']) && isset($filterData['end_date']) && !empty($filterData['end_date'])) {
+                    $pgWebhooks->whereBetween('created_at', [$filterData['start_date'], $filterData['end_date']]);
+                }
+            }
+
+            Paginator::currentPageResolver(function () use ($pageNo) {
+                return $pageNo;
+            });
+            $pgWebhooks->orderBy('created_at', 'desc');
+            if($pgWebhooks->count() > 0){
+                return $pgWebhooks->paginate($limit);
+            }
+            return null;
+        } catch (QueryException $ex) {
+            Log::error('Error while executing SQL Query', [
+                'class' => __CLASS__,
+                'function' => __METHOD__,
+                'file' => $ex->getFile(),
+                'line_no' => $ex->getLine(),
+                'error_message' => $ex->getMessage(),
+            ]);
+            return null;
+        }
+    }
+
+}
